@@ -18,7 +18,7 @@ export class NodeEditor<EventsTypes = any> extends Context<DefaultEventsTypes & 
 
     constructor(id: string, container: HTMLElement) {
         super(id, new EditorEvents());
-        
+
         this.view = new EditorView(container, this.components, this);
 
         this.on('destroy', listenWindow('keydown', e => this.trigger('keydown', e)));
@@ -42,7 +42,7 @@ export class NodeEditor<EventsTypes = any> extends Context<DefaultEventsTypes & 
 
         this.nodes.push(node);
         this.view.addNode(node);
-        
+
         this.trigger('nodecreated', node);
     }
 
@@ -68,27 +68,27 @@ export class NodeEditor<EventsTypes = any> extends Context<DefaultEventsTypes & 
 
             this.trigger('connectioncreated', connection);
         } catch (e) {
-            this.trigger('warn', e)
+            this.trigger('warn', e as Error)
         }
     }
 
     removeConnection(connection: Connection) {
         if (!this.trigger('connectionremove', connection)) return;
-            
+
         this.view.removeConnection(connection);
         connection.remove();
 
         this.trigger('connectionremoved', connection);
     }
 
-    selectNode(node: Node, accumulate: boolean = false) {
-        if (this.nodes.indexOf(node) === -1) 
+    selectNode(node: Node, accumulate = false) {
+        if (this.nodes.indexOf(node) === -1)
             throw new Error('Node not exist in list');
-        
+
         if (!this.trigger('nodeselect', node)) return;
 
         this.selected.add(node, accumulate);
-        
+
         this.trigger('nodeselected', node);
     }
 
@@ -97,7 +97,7 @@ export class NodeEditor<EventsTypes = any> extends Context<DefaultEventsTypes & 
 
         if (!component)
             throw `Component ${name} not found`;
-        
+
         return component as Component;
     }
 
@@ -113,7 +113,7 @@ export class NodeEditor<EventsTypes = any> extends Context<DefaultEventsTypes & 
 
     toJSON() {
         const data: Data = { id: this.id, nodes: {} };
-        
+
         this.nodes.forEach(node => data.nodes[node.id] = node.toJSON());
         this.trigger('export', data);
         return data;
@@ -121,12 +121,12 @@ export class NodeEditor<EventsTypes = any> extends Context<DefaultEventsTypes & 
 
     beforeImport(json: Data) {
         const checking = Validator.validate(this.id, json);
-        
+
         if (!checking.success) {
             this.trigger('warn', checking.msg);
             return false;
         }
-        
+
         this.silent = true;
         this.clear();
         this.trigger('import', json);
@@ -150,11 +150,11 @@ export class NodeEditor<EventsTypes = any> extends Context<DefaultEventsTypes & 
                 nodes[id] = await component.build(Node.fromJSON(node));
                 this.addNode(nodes[id]);
             }));
-        
+
             Object.keys(json.nodes).forEach(id => {
                 const jsonNode = json.nodes[id];
                 const node = nodes[id];
-                
+
                 Object.keys(jsonNode.outputs).forEach(key => {
                     const outputJson = jsonNode.outputs[key];
 
@@ -174,7 +174,7 @@ export class NodeEditor<EventsTypes = any> extends Context<DefaultEventsTypes & 
 
             });
         } catch (e) {
-            this.trigger('warn', e);
+            this.trigger('warn', e as Error);
             return !this.afterImport();
         }
 

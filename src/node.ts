@@ -16,19 +16,19 @@ export class Node {
     meta: {[key: string]: unknown} = {};
 
     static latestId = 0;
-    
+
     constructor(name: string) {
         this.name = name;
         this.id = Node.incrementId();
     }
 
-    _add<T extends any>(list: Map<string, T>, item: any, prop: string) {
+    _add<T extends { key: string } & Record<string, any>>(list: Map<string, T>, item: T, prop: string) {
         if (list.has(item.key))
             throw new Error(`Item with key '${item.key}' already been added to the node`);
         if (item[prop] !== null)
             throw new Error('Item has already been added to some node');
-        
-        item[prop] = this;
+
+        (item as Record<string, Node>)[prop] = this;
         list.set(item.key, item);
     }
 
@@ -67,6 +67,11 @@ export class Node {
         this.outputs.delete(output.key);
     }
 
+    setMeta (meta: {[key: string]: unknown}) {
+        this.meta = meta;
+        return this;
+    }
+
     getConnections() {
         const ios = [...this.inputs.values(), ...this.outputs.values()];
         const connections = ios.reduce((arr, io) => {
@@ -91,9 +96,9 @@ export class Node {
     }
 
     toJSON(): NodeData {
-        const reduceIO = <T extends any>(list: Map<string, Input | Output>) => {
-            return Array.from(list).reduce<T>((obj: any, [key, io]) => {
-                obj[key] = io.toJSON();
+        const reduceIO = <T extends Record<string, any>>(list: Map<string, Input | Output>) => {
+            return Array.from(list).reduce<T>((obj, [key, io]) => {
+                (obj as Record<string, any>)[key] = io.toJSON();
                 return obj;
             }, {} as any)
         }
