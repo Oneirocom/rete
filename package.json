@@ -40,19 +40,21 @@
     "@typescript-eslint/eslint-plugin": "^5.44.0",
     "@typescript-eslint/parser": "^5.44.0",
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.12.1",
-    "jsdom": "^13.2.0",
+    "eslint": "8.24.0",
+    "jsdom": "^21.1.0",
     "jsdom-global": "^3.0.2",
-    "mocha": "^5.2.0",
+    "mocha": "^10.2.0",
     "nyc": "^14.1.1",
-    "rete-cli": "0.6.0-rc.5",
     "ts-node": "^8.0.2",
     "typescript": "^3.3.3333",
-    "watch": "^1.0.2"
+    "watch": "^0.13.0"
+  },
+  "peerDependencies": {
+    "replace-in-file": "6.3.5",
+    "yargs-parser": "21.1.1"
   },
   "dependencies": {
-    "eslint": "8.24.0",
-    "jsdom": "13.2.0",
+    "jsdom": "^21.1.0",
     "jsdom-global": "3.0.2",
     "lodash": "^4.17.21",
     "terminal-kit": "2.4.0",
